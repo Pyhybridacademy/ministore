@@ -1,0 +1,840 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ store_settings.store_name }}{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-purple: #F3E8FF;
+            --secondary-purple: #D8B4FE;
+            --accent-purple: #9333EA;
+        }
+
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-purple);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .preloader-content {
+            width: 150px;
+            height: 150px;
+            position: relative;
+        }
+
+        .preloader-circle {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 4px solid transparent;
+            border-top-color: var(--accent-purple);
+            border-radius: 50%;
+            animation: rotate 2s linear infinite;
+        }
+
+        .preloader-circle:nth-child(2) {
+            width: 80%;
+            height: 80%;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0.2s;
+        }
+
+        .preloader-circle:nth-child(3) {
+            width: 60%;
+            height: 60%;
+            top: 20%;
+            left: 20%;
+            animation-delay: 0.4s;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Custom animations */
+        .fade-up {
+            animation: fadeUp 0.6s ease-out;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Custom styles */
+        .custom-purple-gradient {
+            background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple));
+        }
+
+        .hover-scale {
+            transition: transform 0.3s ease;
+        }
+
+        .hover-scale:hover {
+            transform: scale(1.03);
+        }
+
+        .swiper-button-next, .swiper-button-prev {
+            background-color: rgba(255, 255, 255, 0.9);
+            width: 50px !important;
+            height: 50px !important;
+            border-radius: 50%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .swiper-button-next:after, .swiper-button-prev:after {
+            font-size: 20px !important;
+            color: #9333EA;
+            font-weight: bold;
+        }
+
+        /* Add to Cart Button Animation */
+        .add-to-cart-btn {
+            background: linear-gradient(45deg, #9333EA, #D8B4FE);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .add-to-cart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(147, 51, 234, 0.3);
+        }
+
+        .add-to-cart-btn i {
+            margin-right: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .add-to-cart-btn:hover i {
+            transform: rotate(360deg);
+        }
+
+        /* Product Card Styling */
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(216, 180, 254, 0.2);
+        }
+
+        .product-image-wrapper {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-image-wrapper img {
+            transition: transform 0.5s ease;
+        }
+
+        .product-card:hover .product-image-wrapper img {
+            transform: scale(1.1);
+        }
+
+        /* Price Tag Styling */
+        .price-tag {
+            background: #9333EA;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-weight: 600;
+            box-shadow: 0 3px 10px rgba(147, 51, 234, 0.3);
+        }
+
+        /* Custom Fonts */
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            padding-bottom: 70px; /* Space for mobile navigation */
+        }
+
+        /* Mobile Navigation */
+        .mobile-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 50;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #6B7280;
+            font-size: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active {
+            color: #9333EA;
+        }
+
+        .nav-item i {
+            font-size: 1.5rem;
+            margin-bottom: 4px;
+        }
+
+        /* Custom scrollbar */
+        .custom-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: #D8B4FE #F3E8FF;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #F3E8FF;
+            border-radius: 10px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #D8B4FE;
+            border-radius: 10px;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-[#F3E8FF]">
+    <!-- Preloader -->
+    <div class="preloader">
+        <div class="preloader-content">
+            <div class="preloader-circle"></div>
+            <div class="preloader-circle"></div>
+            <div class="preloader-circle"></div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-white/90 backdrop-blur-sm shadow-md fixed w-full z-40 transition-all duration-300">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-3xl font-bold text-[#9333EA] animate__animated animate__fadeIn">{{ store_settings.store_name }}</h1>
+            <div class="flex items-center space-x-6">
+                <button id="payment-info-btn" class="text-gray-600 hover:text-gray-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                    </svg>
+                </button>
+                <button id="cart-btn" class="text-gray-600 hover:text-gray-800 relative">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-20">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Cart Sidebar -->
+    <div id="cart-sidebar" class="fixed right-0 top-0 h-full w-96 bg-white/95 backdrop-blur-md shadow-2xl transform translate-x-full transition-all duration-500 z-50">
+        <div class="p-6 h-full flex flex-col">
+            <!-- Cart Header -->
+            <div class="flex justify-between items-center border-b border-purple-100 pb-4">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-shopping-bag text-2xl text-purple-500"></i>
+                    <h2 class="text-2xl font-bold text-gray-800">Your Cart</h2>
+                </div>
+                <button id="close-cart" class="p-2 rounded-full hover:bg-purple-50 transition-colors duration-300">
+                    <i class="fas fa-times text-gray-500 hover:text-purple-500 text-xl"></i>
+                </button>
+            </div>
+            
+            <!-- Cart Items Container -->
+            <div id="cart-items" class="flex-grow overflow-auto py-4 custom-scrollbar">
+                <!-- Empty cart message -->
+                <div id="empty-cart-message" class="text-center py-8 text-gray-500">
+                    <i class="fas fa-shopping-cart text-4xl mb-3 text-purple-200"></i>
+                    <p>Your cart is empty</p>
+                </div>
+            </div>
+            
+            <!-- Cart Footer -->
+            <div class="border-t border-purple-100 pt-4 space-y-4">
+                <!-- Subtotal -->
+                <div class="flex justify-between items-center text-xl">
+                    <span class="font-medium text-gray-600">Subtotal:</span>
+                    <span id="cart-total" class="font-bold text-purple-500">$0.00</span>
+                </div>
+                
+                <!-- Shipping Info -->
+                <div class="bg-purple-50 p-3 rounded-lg text-sm text-purple-600">
+                    <i class="fas fa-truck mr-2"></i>
+                    Free shipping on orders over $50
+                </div>
+                
+                <!-- Checkout Button -->
+                <button id="checkout-btn" class="w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white py-4 rounded-lg hover:from-purple-600 hover:to-purple-700 transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center space-x-2">
+                    <span>Proceed to Checkout</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="payment-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-2xl w-[450px] shadow-2xl transform transition-all duration-300 scale-100">
+            <!-- Header -->
+            <div class="flex justify-between items-center mb-6">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-credit-card text-purple-500 text-2xl"></i>
+                    <h3 class="text-2xl font-bold text-gray-800">Payment Details</h3>
+                </div>
+                <button id="close-payment" class="p-2 hover:bg-purple-50 rounded-full transition-colors duration-300">
+                    <i class="fas fa-times text-gray-400 hover:text-purple-500"></i>
+                </button>
+            </div>
+    
+            <!-- Payment Steps -->
+            <div class="space-y-6">
+                <!-- Step 1: Bank Details -->
+                <div id="step-1" class="transform transition-all duration-300">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold">1</div>
+                        <h4 class="font-bold text-lg">Bank Details</h4>
+                    </div>
+                    
+                    <div class="bg-purple-50 rounded-xl p-6 space-y-4">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-university text-purple-500"></i>
+                            <div>
+                                <p class="text-sm text-gray-500">Bank Name</p>
+                                <p class="font-semibold">{{ payment_details.bank_name }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-user text-purple-500"></i>
+                            <div>
+                                <p class="text-sm text-gray-500">Account Name</p>
+                                <p class="font-semibold">{{ payment_details.account_name }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-hashtag text-purple-500"></i>
+                            <div>
+                                <p class="text-sm text-gray-500">Account Number</p>
+                                <p class="font-semibold">{{ payment_details.account_number }}</p>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <button onclick="showStep(2)" class="mt-6 w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white py-4 rounded-xl hover:from-purple-600 hover:to-purple-700 transform hover:-translate-y-1 transition-all duration-300">
+                        <i class="fas fa-check mr-2"></i>I've Made the Payment
+                    </button>
+                </div>
+        
+                <!-- Step 2: Upload Receipt -->
+                <div id="step-2" class="hidden transform transition-all duration-300">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold">2</div>
+                        <h4 class="font-bold text-lg">Upload Receipt</h4>
+                    </div>
+        
+                    <form id="receipt-form" class="space-y-4">
+                        {% csrf_token %}
+                        <div class="border-3 border-dashed border-purple-200 rounded-xl p-8 bg-purple-50 hover:bg-purple-100/50 transition-colors duration-300">
+                            <input type="file" id="receipt-upload" accept="image/*" class="hidden" required>
+                            <label for="receipt-upload" class="block text-center cursor-pointer">
+                                <i class="fas fa-cloud-upload-alt text-4xl text-purple-400 mb-3"></i>
+                                <p class="text-purple-600 font-medium">Click to upload receipt</p>
+                                <p class="text-sm text-purple-400 mt-1">PNG, JPG up to 5MB</p>
+                            </label>
+                        </div>
+        
+                        <div id="receipt-preview" class="hidden">
+                            <img id="preview-image" class="w-full h-48 object-cover rounded-xl shadow-md">
+                        </div>
+        
+                        <button type="submit" class="w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white py-4 rounded-xl hover:from-purple-600 hover:to-purple-700 transform hover:-translate-y-1 transition-all duration-300">
+                            <i class="fas fa-paper-plane mr-2"></i>Submit Order
+                        </button>
+                    </form>
+                </div>
+        
+                <!-- Step 3: Success -->
+                <div id="step-3" class="hidden transform transition-all duration-300">
+                    <div class="text-center py-6">
+                        <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-check text-4xl text-green-500"></i>
+                        </div>
+                        <h4 class="text-2xl font-bold text-gray-800 mb-2">Order Submitted!</h4>
+                        <p class="text-gray-600">Your order ID: <span id="order-id" class="font-semibold text-purple-500"></span></p>
+                        <p class="text-sm text-gray-500 mt-4">You'll receive a confirmation email shortly</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Navigation -->
+    <nav class="mobile-nav">
+        <a href="{% url 'home' %}" class="nav-item {% if request.path == '/' %}active{% endif %}">
+            <i class="fas fa-store"></i>
+            <span>Shop</span>
+        </a>
+        <a href="{% url 'wishlist' %}" class="nav-item {% if request.path == '/wishlist/' %}active{% endif %}">
+            <i class="fas fa-heart"></i>
+            <span>Wishlist</span>
+        </a>
+        <a href="#" class="nav-item" id="mobile-cart-btn">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Cart</span>
+        </a>
+        <a href="{% url 'admin_dashboard' %}" class="nav-item {% if '/admin-panel/' in request.path %}active{% endif %}">
+            <i class="fas fa-user-shield"></i>
+            <span>Admin</span>
+        </a>
+    </nav>
+
+    <!-- Social Media Hub -->
+    <div class="social-hub">
+        <!-- Main Toggle Button -->
+        <button class="hub-toggle">
+            <svg class="hub-icon" viewBox="0 0 24 24" width="48" height="48">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-6h2v2h-2zm0-8h2v6h-2z"/>
+            </svg>
+        </button>
+
+        <!-- Social Icons -->
+        <div class="social-icons">
+            <a href="{{ store_settings.whatsapp }}" target="_blank" class="social-icon whatsapp">
+                <i class="fab fa-whatsapp"></i>
+            </a>
+            <a href="{{ store_settings.instagram }}" target="_blank" class="social-icon instagram">
+                <i class="fab fa-instagram"></i>
+            </a>
+            <a href="{{ store_settings.facebook }}" target="_blank" class="social-icon facebook">
+                <i class="fab fa-facebook"></i>
+            </a>
+            <a href="{{ store_settings.twitter }}" target="_blank" class="social-icon twitter">
+                <i class="fab fa-twitter"></i>
+            </a>
+        </div>
+    </div>
+
+    <style>
+        .social-hub {
+            position: fixed;
+            bottom: 4rem;
+            right: 2rem;
+            z-index: 50;
+        }
+
+        .hub-toggle {
+            background: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            position: relative;
+        }
+
+        .hub-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        .hub-icon {
+            fill: #9333EA;
+            transition: transform 0.3s ease;
+        }
+
+        .social-icons {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+        }
+
+        .social-icon {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            font-size: 24px;
+            transform: scale(0);
+            opacity: 0;
+        }
+
+        /* Initial positions */
+        .whatsapp, .instagram, .facebook, .twitter {
+            bottom: 0;
+            right: 0;
+        }
+
+        /* Active state */
+        .social-hub.active .social-icon {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .social-hub.active .whatsapp {
+            transform: translate(0, -80px);
+            color: #25D366;
+        }
+
+        .social-hub.active .instagram {
+            transform: translate(-56.57px, -56.57px);
+            color: #E4405F;
+        }
+
+        .social-hub.active .facebook {
+            transform: translate(-80px, 0);
+            color: #1877F2;
+        }
+
+        .social-hub.active .twitter {
+            transform: translate(-56.57px, 56.57px);
+            color: #1DA1F2;
+        }
+
+        /* Hover effects */
+        .social-icon:hover {
+            transform: scale(1.15);
+        }
+
+        .social-hub.active .whatsapp:hover {
+            transform: translate(0, -80px) scale(1.15);
+        }
+
+        .social-hub.active .instagram:hover {
+            transform: translate(-56.57px, -56.57px) scale(1.15);
+        }
+
+        .social-hub.active .facebook:hover {
+            transform: translate(-80px, 0) scale(1.15);
+        }
+
+        .social-hub.active .twitter:hover {
+            transform: translate(-56.57px, 56.57px) scale(1.15);
+        }
+    </style>
+
+    <footer class="bg-white border-t border-purple-100 mt-20 pb-20">
+        <div class="container mx-auto px-6 py-12 text-center">
+            <!-- Brand Section -->
+            <div class="space-y-4">
+                <h3 class="text-3xl font-bold text-gray-800">{{ store_settings.store_name }}</h3>
+                <div class="flex justify-center space-x-4 mt-4">
+                    <a href="{{ store_settings.instagram }}" class="text-purple-400 hover:text-purple-600 transition-colors">
+                        <i class="fab fa-instagram text-2xl"></i>
+                    </a>
+                    <a href="{{ store_settings.facebook }}" class="text-purple-400 hover:text-purple-600 transition-colors">
+                        <i class="fab fa-facebook text-2xl"></i>
+                    </a>
+                    <a href="{{ store_settings.twitter }}" class="text-purple-400 hover:text-purple-600 transition-colors">
+                        <i class="fab fa-twitter text-2xl"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="mt-8">
+                <h4 class="font-semibold text-gray-800 mb-2">Contact</h4>
+                <ul class="space-y-2 text-gray-600">
+                    <li class="flex justify-center items-center space-x-2">
+                        <i class="fas fa-envelope text-purple-400"></i>
+                        <span>{{ store_settings.email }}</span>
+                    </li>
+                    <li class="flex justify-center items-center space-x-2">
+                        <i class="fas fa-phone text-purple-400"></i>
+                        <span>{{ store_settings.phone }}</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Bottom Bar -->
+            <div class="border-t border-purple-100 mt-12 pt-6 flex flex-col items-center text-sm text-gray-600">
+                <p>© 2025 {{ store_settings.store_name }}. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Common JavaScript -->
+    <script>
+        // Initialize AOS
+        document.addEventListener('DOMContentLoaded', function() {
+            AOS.init({
+                duration: 800,
+                once: true
+            });
+
+            // Preloader
+            const preloader = document.querySelector('.preloader');
+            preloader.style.opacity = '0';
+            setTimeout(() => {
+                preloader.style.display = 'none';
+            }, 500);
+        });
+
+        // Scroll header effect
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) {
+                header.classList.add('py-2');
+                header.classList.remove('py-4');
+            } else {
+                header.classList.add('py-4');
+                header.classList.remove('py-2');
+            }
+        });
+
+        // Social hub toggle
+        document.querySelector('.hub-toggle').addEventListener('click', function() {
+            const hub = document.querySelector('.social-hub');
+            hub.classList.toggle('active');
+            
+            // Rotate icon when active
+            const icon = this.querySelector('.hub-icon');
+            icon.style.transform = hub.classList.contains('active') ? 'rotate(45deg)' : 'rotate(0)';
+        });
+
+        // Cart functionality
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const cartSidebar = document.getElementById('cart-sidebar');
+        const cartBtn = document.getElementById('cart-btn');
+        const mobileCartBtn = document.getElementById('mobile-cart-btn');
+        const closeCartBtn = document.getElementById('close-cart');
+        const paymentModal = document.getElementById('payment-modal');
+        const paymentInfoBtn = document.getElementById('payment-info-btn');
+        const closePaymentBtn = document.getElementById('close-payment');
+        const checkoutBtn = document.getElementById('checkout-btn');
+
+        function addToCart(productId, name, price) {
+            const existingItem = cart.find(item => item.id === productId);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    id: productId,
+                    name: name,
+                    price: price,
+                    quantity: 1
+                });
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartUI();
+            openCart();
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartUI();
+        }
+
+        function updateQuantity(productId, change) {
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                item.quantity += change;
+                if (item.quantity <= 0) {
+                    removeFromCart(productId);
+                } else {
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    updateCartUI();
+                }
+            }
+        }
+
+        function updateCartUI() {
+            const cartItems = document.getElementById('cart-items');
+            const cartCount = document.getElementById('cart-count');
+            const cartTotal = document.getElementById('cart-total');
+            const emptyCartMessage = document.getElementById('empty-cart-message');
+            
+            // Update cart count
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.textContent = totalItems;
+            
+            // Show/hide empty cart message
+            if (cart.length === 0) {
+                emptyCartMessage.classList.remove('hidden');
+                cartItems.innerHTML = '';
+            } else {
+                emptyCartMessage.classList.add('hidden');
+                
+                // Update cart items
+                cartItems.innerHTML = cart.map(item => `
+                    <div class="flex justify-between items-center mb-4 cart-item">
+                        <div>
+                            <h4 class="font-bold">${item.name}</h4>
+                            <p class="text-gray-600">$${item.price} x ${item.quantity}</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="updateQuantity(${item.id}, -1)" class="px-2 py-1 bg-gray-200 rounded">-</button>
+                            <span>${item.quantity}</span>
+                            <button onclick="updateQuantity(${item.id}, 1)" class="px-2 py-1 bg-gray-200 rounded">+</button>
+                            <button onclick="removeFromCart(${item.id})" class="text-red-500 ml-2">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            // Update total
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            cartTotal.textContent = `$${total.toFixed(2)}`;
+        }
+
+        function openCart() {
+            cartSidebar.classList.remove('translate-x-full');
+        }
+
+        function closeCart() {
+            cartSidebar.classList.add('translate-x-full');
+        }
+
+        function showStep(step) {
+            document.getElementById('step-1').classList.add('hidden');
+            document.getElementById('step-2').classList.add('hidden');
+            document.getElementById('step-3').classList.add('hidden');
+            document.getElementById(`step-${step}`).classList.remove('hidden');
+        }
+
+        // Receipt preview
+        const receiptUpload = document.getElementById('receipt-upload');
+        const receiptPreview = document.getElementById('receipt-preview');
+        const previewImage = document.getElementById('preview-image');
+
+        if (receiptUpload) {
+            receiptUpload.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImage.src = e.target.result;
+                        receiptPreview.classList.remove('hidden');
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        // Form submission
+        const receiptForm = document.getElementById('receipt-form');
+        if (receiptForm) {
+            receiptForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData();
+                formData.append('items', JSON.stringify(cart));
+                formData.append('total', cart.reduce((sum, item) => sum + (item.price * item.quantity), 0));
+                formData.append('receipt', receiptUpload.files[0]);
+                
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                
+                try {
+                    const response = await fetch('/submit-order/', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRFToken': csrfToken
+                        },
+                        credentials: 'same-origin'
+                    });
+                    
+                    const data = await response.json();
+                    if (data.status === 'success') {
+                        document.getElementById('order-id').textContent = data.order_id;
+                        showStep(3);
+                        cart = [];
+                        localStorage.setItem('cart', JSON.stringify(cart));
+                        updateCartUI();
+                    } else {
+                        alert('Error submitting order: ' + data.message);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error submitting order. Please try again.');
+                }
+            });
+        }
+
+        // Event Listeners
+        cartBtn.addEventListener('click', openCart);
+        mobileCartBtn.addEventListener('click', openCart);
+        closeCartBtn.addEventListener('click', closeCart);
+        paymentInfoBtn.addEventListener('click', () => paymentModal.classList.remove('hidden'));
+        closePaymentBtn.addEventListener('click', () => paymentModal.classList.add('hidden'));
+        
+        checkoutBtn.addEventListener('click', () => {
+            if (cart.length === 0) {
+                alert('Your cart is empty!');
+                return;
+            }
+            paymentModal.classList.remove('hidden');
+        });
+
+        // Initialize cart UI on page load
+        updateCartUI();
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

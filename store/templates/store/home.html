@@ -1,0 +1,407 @@
+{% extends 'store/base.html' %}
+
+{% block title %}{{ store_settings.store_name }} - Home{% endblock %}
+
+{% block content %}
+<!-- Hero Section with Full-width Slider -->
+<section class="relative overflow-hidden">
+    <div class="swiper-container h-screen max-h-[800px]">
+        <div class="swiper-wrapper">
+            {% for product in featured_products %}
+            <div class="swiper-slide relative">
+                <div class="absolute inset-0 bg-black/30 z-10"></div>
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" 
+                     class="w-full h-full object-cover object-center">
+                
+                <div class="absolute bottom-0 left-0 right-0 z-20 pb-20 px-8 text-white">
+                    <div class="container mx-auto max-w-6xl">
+                        <div class="max-w-xl" data-swiper-parallax="-200">
+                            <span class="text-sm uppercase tracking-wider text-purple-300 mb-2 block">Featured Product</span>
+                            <h2 class="text-4xl md:text-5xl font-serif font-bold mb-4 leading-tight">{{ product.name }}</h2>
+                            <p class="text-lg mb-6 opacity-90">{{ product.description|truncatechars:150 }}</p>
+                            <div class="flex space-x-4">
+                                <button onclick="addToCart({{ product.id }}, '{{ product.name }}', {{ product.price }})" 
+                                        class="bg-white text-purple-800 px-8 py-3 rounded-sm hover:bg-purple-100 transition-all duration-300 flex items-center">
+                                    <span class="mr-2">${{ product.price }}</span>
+                                    <span class="font-medium">Add to Cart</span>
+                                </button>
+                                <button onclick="addToWishlist({{ product.id }})" 
+                                        class="border border-white text-white px-4 hover:bg-white/10 transition-colors duration-300">
+                                    <i class="far fa-heart"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Custom Pagination -->
+        <div class="swiper-pagination !bottom-8 !left-auto !right-8 !w-auto"></div>
+        
+        <!-- Custom Navigation -->
+        <div class="swiper-button-next !right-8 !left-auto !text-white after:!text-xl"></div>
+        <div class="swiper-button-prev !left-8 !right-auto !text-white after:!text-xl"></div>
+    </div>
+    
+    <!-- Scroll Down Indicator -->
+    <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20 animate-bounce">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+        </svg>
+    </div>
+</section>
+
+<!-- Featured Categories -->
+<section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <span class="text-sm uppercase tracking-wider text-purple-600">Collections</span>
+            <h2 class="text-3xl font-serif font-bold mt-2">Shop by Category</h2>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {% for category in featured_categories %}
+            <a href="{% url 'category' category.slug %}" class="group relative overflow-hidden h-64 rounded-sm">
+                <div class="absolute inset-0 bg-black/30 z-10 transition-all duration-500 group-hover:bg-black/10"></div>
+                <img src="{{ category.image.url }}" alt="{{ category.name }}" 
+                     class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                <div class="absolute bottom-0 left-0 right-0 p-6 z-20">
+                    <h3 class="text-xl font-serif font-bold text-white">{{ category.name }}</h3>
+                    <span class="text-purple-200 text-sm mt-1 inline-block">Shop Now →</span>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <span class="text-sm uppercase tracking-wider text-purple-600">Process</span>
+            <h2 class="text-3xl font-serif font-bold mt-2">How It Works</h2>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div class="text-center px-6 py-8 bg-white rounded-sm shadow-sm hover:shadow-md transition-shadow duration-300">
+                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6 text-purple-600">
+                    <span class="text-2xl font-serif font-bold">1</span>
+                </div>
+                <h3 class="font-serif text-xl font-bold mb-3">Browse Products</h3>
+                <p class="text-gray-600">Explore our carefully curated collection of premium products.</p>
+            </div>
+            
+            <div class="text-center px-6 py-8 bg-white rounded-sm shadow-sm hover:shadow-md transition-shadow duration-300">
+                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6 text-purple-600">
+                    <span class="text-2xl font-serif font-bold">2</span>
+                </div>
+                <h3 class="font-serif text-xl font-bold mb-3">Add to Cart</h3>
+                <p class="text-gray-600">Select your items and add them to your shopping cart.</p>
+            </div>
+            
+            <div class="text-center px-6 py-8 bg-white rounded-sm shadow-sm hover:shadow-md transition-shadow duration-300">
+                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6 text-purple-600">
+                    <span class="text-2xl font-serif font-bold">3</span>
+                </div>
+                <h3 class="font-serif text-xl font-bold mb-3">Complete Purchase</h3>
+                <p class="text-gray-600">Follow the simple checkout process to receive your order.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products -->
+<section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <span class="text-sm uppercase tracking-wider text-purple-600">Selection</span>
+            <h2 class="text-3xl font-serif font-bold mt-2">Our Products</h2>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {% for product in page_obj %}
+            <div class="group relative bg-white border border-gray-100 rounded-sm overflow-hidden transition-all duration-300 hover:shadow-lg">
+                <div class="relative overflow-hidden">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" 
+                         class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105">
+                    
+                    <!-- Product actions -->
+                    <div class="absolute top-4 right-4 flex flex-col space-y-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <button onclick="addToWishlist({{ product.id }})" 
+                                class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-gray-700 hover:text-purple-600 transition-colors">
+                            <i class="far fa-heart"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-serif text-lg font-bold">{{ product.name }}</h3>
+                        <span class="text-purple-600 font-medium">${{ product.price }}</span>
+                    </div>
+                    
+                    <p class="text-gray-500 text-sm mb-4">{{ product.description|truncatechars:60 }}</p>
+                    
+                    <button onclick="addToCart({{ product.id }}, '{{ product.name }}', {{ product.price }})"
+                            class="w-full py-3 bg-purple-600 text-white hover:bg-purple-700 transition-colors duration-300 flex items-center justify-center">
+                        <i class="fas fa-shopping-cart mr-2"></i>
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Elegant Pagination -->
+        <div class="mt-12 flex justify-center">
+            <nav class="flex items-center space-x-2">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-2 border border-gray-200 rounded-sm hover:bg-gray-50">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <span class="px-4 py-2 bg-purple-600 text-white rounded-sm">{{ num }}</span>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <a href="?page={{ num }}" class="px-4 py-2 border border-gray-200 rounded-sm hover:bg-gray-50">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-2 border border-gray-200 rounded-sm hover:bg-gray-50">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                {% endif %}
+            </nav>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <span class="text-sm uppercase tracking-wider text-purple-600">Testimonials</span>
+            <h2 class="text-3xl font-serif font-bold mt-2">What Our Customers Say</h2>
+        </div>
+        
+        <div class="swiper-testimonials max-w-4xl mx-auto">
+            <div class="swiper-wrapper">
+                {% for testimonial in testimonials %}
+                <div class="swiper-slide">
+                    <div class="bg-white p-8 rounded-sm shadow-sm text-center">
+                        <div class="w-16 h-16 rounded-full overflow-hidden mx-auto mb-6">
+                            <img src="{{ testimonial.customer_image.url }}" alt="{{ testimonial.customer_name }}" class="w-full h-full object-cover">
+                        </div>
+                        <div class="text-yellow-400 mb-4">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= testimonial.rating %}
+                                    <i class="fas fa-star"></i>
+                                {% else %}
+                                    <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <p class="text-gray-600 italic mb-6">"{{ testimonial.content }}"</p>
+                        <h4 class="font-serif font-bold">{{ testimonial.customer_name }}</h4>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="swiper-pagination !relative mt-8"></div>
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter -->
+<section class="py-16 bg-purple-600 text-white">
+    <div class="container mx-auto px-4 max-w-4xl text-center">
+        <h2 class="text-3xl font-serif font-bold mb-4">Stay Updated</h2>
+        <p class="text-purple-100 mb-8 max-w-2xl mx-auto">Subscribe to our newsletter for the latest products, exclusive offers, and style inspiration.</p>
+        
+        <form class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+            <input type="email" placeholder="Your email address" 
+                   class="flex-grow px-4 py-3 rounded-sm border-0 text-gray-800 focus:ring-2 focus:ring-purple-300">
+            <button type="submit" class="px-6 py-3 bg-white text-purple-600 font-medium hover:bg-gray-100 transition-colors">
+                Subscribe
+            </button>
+        </form>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize Main Product Swiper
+    const mainSwiper = new Swiper('.swiper-container', {
+        loop: true,
+        speed: 1000,
+        parallax: true,
+        autoplay: {
+            delay: 6000,
+            disableOnInteraction: false,
+        },
+        pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+            renderBullet: function (index, className) {
+                return '<span class="' + className + '">0' + (index + 1) + '</span>';
+            },
+        },
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+    });
+
+    // Initialize Testimonials Swiper
+    const testimonialSwiper = new Swiper('.swiper-testimonials', {
+        loop: true,
+        slidesPerView: 1,
+        spaceBetween: 30,
+        pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+        },
+    });
+
+    // Wishlist functionality
+    function addToWishlist(productId) {
+        fetch(`/add-to-wishlist/${productId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Show elegant toast notification
+                const toast = document.createElement('div');
+                toast.className = 'fixed top-4 right-4 bg-white text-purple-600 px-6 py-3 rounded-sm shadow-lg flex items-center z-50 animate-fade-in-up';
+                toast.innerHTML = `
+                    <i class="fas fa-check-circle mr-2"></i>
+                    <span>Added to wishlist</span>
+                `;
+                document.body.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.classList.add('animate-fade-out');
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
+    // Add animation for scroll reveal
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate elements when they come into view
+        const animateOnScroll = function() {
+            const elements = document.querySelectorAll('.scroll-animate');
+            elements.forEach(el => {
+                const elementPosition = el.getBoundingClientRect().top;
+                const windowHeight = window.innerHeight;
+                
+                if (elementPosition < windowHeight - 100) {
+                    el.classList.add('animate-fade-in-up');
+                }
+            });
+        };
+        
+        // Run once on load
+        animateOnScroll();
+        
+        // Run on scroll
+        window.addEventListener('scroll', animateOnScroll);
+    });
+</script>
+
+<style>
+    /* Custom animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .animate-fade-in-up {
+        animation: fadeInUp 0.6s ease-out forwards;
+    }
+    
+    @keyframes fadeOut {
+        from {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        to {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+    }
+    
+    .animate-fade-out {
+        animation: fadeOut 0.3s ease-out forwards;
+    }
+    
+    /* Swiper custom styles */
+    .swiper-pagination-bullet {
+        width: auto !important;
+        height: auto !important;
+        background: transparent !important;
+        opacity: 1 !important;
+        color: rgba(255,255,255,0.6);
+        font-size: 12px;
+        padding: 4px 8px;
+        border-radius: 0 !important;
+        margin: 0 4px !important;
+        position: relative;
+    }
+    
+    .swiper-pagination-bullet:before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 8px;
+        right: 8px;
+        height: 1px;
+        background: rgba(255,255,255,0.3);
+    }
+    
+    .swiper-pagination-bullet-active {
+        color: white !important;
+    }
+    
+    .swiper-pagination-bullet-active:before {
+        background: white;
+    }
+    
+    /* Custom scrollbar for testimonials */
+    .swiper-testimonials::-webkit-scrollbar {
+        height: 4px;
+    }
+    
+    .swiper-testimonials::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+    
+    .swiper-testimonials::-webkit-scrollbar-thumb {
+        background: #9333EA;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends 'store/base.html' %}
+
+{% block title %}{{ store_settings.store_name }} - Wishlist{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-center mb-8 text-[#9333EA]">My Wishlist</h1>
+    
+    {% if wishlist_items %}
+    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {% for item in wishlist_items %}
+        <div class="bg-white rounded-lg shadow-md overflow-hidden hover-scale" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:1|stringformat:'d'}}00">
+            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="w-full h-48 object-cover">
+            <div class="p-4">
+                <h3 class="font-bold text-lg mb-2">{{ item.product.name }}</h3>
+                <p class="text-gray-600 mb-4">${{ item.product.price }}</p>
+                <div class="flex space-x-2">
+                    <button onclick="addToCart({{ item.product.id }}, '{{ item.product.name }}', {{ item.product.price }})"
+                        class="add-to-cart-btn py-3 rounded-full text-white flex items-center justify-center group flex-1">
+                        <i class="fas fa-shopping-cart"></i>
+                        Add to Cart
+                    </button>
+                    <button onclick="removeFromWishlist({{ item.id }})" class="bg-white border border-red-300 text-red-600 px-4 py-3 rounded-full hover:bg-red-50 transition-colors">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-16">
+        <div class="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-heart text-3xl text-purple-400"></i>
+        </div>
+        <h3 class="text-xl font-bold mb-2">Your wishlist is empty</h3>
+        <p class="text-gray-600 mb-6">Browse our products and add items to your wishlist</p>
+        <a href="{% url 'home' %}" class="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-6 py-3 rounded-full hover:from-purple-600 hover:to-purple-700 transform hover:-translate-y-1 transition-all duration-300 inline-flex items-center">
+            <i class="fas fa-shopping-bag mr-2"></i>
+            Shop Now
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function removeFromWishlist(wishlistId) {
+        if (confirm('Are you sure you want to remove this item from your wishlist?')) {
+            fetch(`/remove-from-wishlist/${wishlistId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Reload the page to update the wishlist
+                    window.location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    }
+</script>
+{% endblock %}
