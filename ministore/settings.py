@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-hd#5l0$4&$57xipfc3&(!6^25j6xw05o5-ba9j=w(cbm5#n#rl
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['ministore-awxx.onrender.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -136,3 +136,5 @@ LOGIN_URL = 'admin_login'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'webmaster@example.com'
+
+CSRF_TRUSTED_ORIGINS = ['https://ministore-awxx.onrender.com']
